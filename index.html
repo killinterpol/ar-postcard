@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>A postcard from the Lohl's</title>
+    <script src="https://aframe.io/releases/0.6.1/aframe.min.js"></script>
+    <script src="https://jeromeetienne.github.io/AR.js/aframe/build/aframe-ar.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+ 
+    <script>
+       $(function() {
+          setTimeout(function() { $("#hideDiv").fadeOut(1500); }, 5000)
+        })
+        // We're going to register a custom event listener through a-frame that will fire
+        // whenever a marker has entered the camera view and is found through ar.js
+        AFRAME.registerComponent('registerevents', {
+            init: function() {
+                var marker = this.el;
+
+                // Element emits events when found and lost
+                marker.setAttribute('emitevents', 'true');
+
+                marker.addEventListener('markerFound', function() {
+                    // Alright, a marker has been found. Let's get the video element
+                    var vid = document.getElementById('videoLoop');
+
+                    // Make sure that the video a-frame object is visible
+                    document.querySelector('#video-loop').setAttribute('visible', true);
+
+                    // Reset the video to the beginning and play it through
+                    vid.currentTime = 0;                    
+                    vid.play();
+                    
+                    // Once the video has completed, we're going to hide the a-video element
+                    // which will display the a-image element with the watch behind it
+                    vid.addEventListener('ended', function(e) {
+                        document.querySelector('#video-loop').setAttribute('visible', false);
+                    });
+                });
+            }
+        });
+    </script>
+  <style>
+  @import url('https://fonts.googleapis.com/css2?family=Tilt+Neon&display=swap');
+  .arjs-loader {
+    font-family: 'Tilt Neon', cursive;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .arjs-loader div {
+    text-align: center;
+    font-size: 1.25em;
+    color: white;
+  }
+</style>
+</head>
+<body style="margin:0; overflow:hidden;">
+  <div id="hideDiv" class="arjs-loader">
+    <div>Point your phone at the postcard...</div>
+  </div>
+    <a-scene embedded arjs="" artoolkit="">
+        <a-assets timeout="10000">
+            <img id="fadeImg" src="https://upload.wikimedia.org/wikipedia/en/e/ed/Nyan_cat_250px_frame.PNG">
+            <video id="videoLoop" loop="false" autoplay="false" src="https://media.giphy.com/media/gvICh0owJSRVeJESXr/giphy.mp4" preload="auto"></video>
+        </a-assets>
+        <!--<a-marker preset="hiro" registerevents>-->
+        <a-marker type="pattern" patternUrl="https://onedrive.live.com/download?cid=A070E7ED05D9D9D7&resid=A070E7ED05D9D9D7%21210659&authkey=AFzeDLxCJaK5MZs" registerevents>
+            <a-image id="fade-img" src="#fadeImg" height="2" width="1" position="0 0.5 0" rotation="-90 0 0"></a-image>
+            <a-video id="video-loop" src="#videoLoop" height="2" width="1" position="0 0.5 0" rotation="-90 0 0" autoplay="false"></a-video>
+        </a-marker>
+        <a-entity camera></a-entity>
+    </a-scene>
+</body>
+</html>
+
